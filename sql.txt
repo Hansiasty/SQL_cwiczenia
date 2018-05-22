@@ -1,0 +1,36 @@
+create table Osoby(
+    id number(4) primary key,
+    pierwsze_imie varchar(15) not null,
+    drugie_imie varchar(15),
+    nazwisko varchar(25) not null,
+    nazwisko_panienskie varchar (20),
+    plec char(1) not null,
+    data_urodzenia date not null,
+    miejsce_urodzenia varchar(20) not null,
+    data_smierci date,
+    data_wpisu_do_bazy date not null default sysdate,
+    id_ojca number(3),
+    id_matki number(3),
+
+    constraint pi_check check (pierwsze_imie=initcap(pierwsze_imie)),
+    constraint di_check check (drugie_imie=initcap(drugie_imie)),
+    constraint nz_check check (nazwisko=initcap(nazwisko)),
+    constraint np_check CHECK (nazwisko_panienskie=initcap(nazwisko_panienskie)),
+    constraint plec_check check (plec in ('K','M')),
+    constraint mu_check check  (miejsce_urodzenia=initcap(miejsce_urodzenia)),
+    constraint ds_check check (data_smierci>data_urodzenia)
+);
+
+create table Zwiazki(
+data_zawarcia date not null,
+data_zakonczenia date,
+id_meza number(3) not null,
+id_zony number(3) not null,
+constraint zwiazki_pk primary key (data_zawarcia,id_meza,id_zony),
+constraint dz_check check (data_zakonczenia>data_zawarcia),
+constraint im_fk FOREIGN KEY (id_meza) references Osoby(id),
+constraint iz_fk FOREIGN KEY (id_zony) references Osoby(id)
+);
+
+create index osoby_npi_ind on osoby(nazwisko,pierwsze_imie);
+create sequence  osoby_seq start with 1 increment by 1;
